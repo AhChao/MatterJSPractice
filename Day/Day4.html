@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day4</title>
+</head>
+<body>
+    <h1>Day4</h1>
+    <button onclick="RenderRun()">Run The Render</button>
+    <button onclick="RenderStop()">Stop The Render</button>
+    <input type="color" id="backgroundColor">
+    <button onclick="ChangeBackgroundColor()">Change Background Color</button>
+    <button onclick="SetBackgroundTransparent()">Set Background Transparent</button>
+    <br>
+    <button onclick="LookAtBoxA()">Look At Box A With Center</button>
+    <button onclick="LookAtBoxB()">Look At Box B With Center</button>
+    <button onclick="LookAtGround()">Look At Ground With Center</button>
+    <button onclick="ResetViewPoint()">Reset Viewpoint</button>
+    <br>
+    <input id="pixelRatioInput" type="text" value="0"/>
+    <button onclick="SetPixelRatio()">Set Pixel Ratio</button>
+    <button onclick="ToggleWireframeDisplay()">Toggle Wireframe Display</button>
+    <br>
+    <script src="../Lib/matter.min.js"></script>
+    <script>
+        // module aliases
+        var Engine = Matter.Engine,
+            Render = Matter.Render,
+            Runner = Matter.Runner,
+            Bodies = Matter.Bodies,
+            Composite = Matter.Composite;
+
+        // create an engine
+        var engine = Engine.create();
+
+        // create a renderer
+        var render = Render.create({
+            element: document.body,
+            engine: engine, 
+            options: {
+                width: 800,
+                height: 600,
+                pixelRatio: 1,
+                background: '#bfe9f5', //"#bfe9f5"
+                wireframeBackground: '#14151f',
+                hasBounds: this.bounds,
+                enabled: true,
+                wireframes: false,
+                showSleeping: true,
+                showDebug: false,//
+                showStats: true,//
+                showPerformance: false,
+                showBroadphase: false,
+                showBounds: false,
+                showVelocity: true,//
+                showCollisions: true,//
+                showSeparations: false,
+                showAxes: false,
+                showPositions: false,
+                showAngleIndicator: true,//
+                showIds: true,//
+                showVertexNumbers: false,
+                showConvexHulls: false,
+                showInternalEdges: false,
+                showMousePosition: false
+            }        
+        });
+
+        // create two boxes and a ground
+        var boxA = Bodies.rectangle(400, 200, 80, 80);
+        var boxB = Bodies.rectangle(450, 50, 80, 80);
+        var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+        // add all of the bodies to the world
+        Composite.add(engine.world, [boxA, boxB, ground]);
+
+        // run the renderer
+        Render.run(render);//can comment this line if want to try run by button
+
+        // create runner
+        var runner = Runner.create();
+
+        // run the engine
+        Runner.run(runner, engine);
+        function RenderRun()
+        {
+            Render.run(render);
+        }
+        function RenderStop()
+        {
+            Render.stop(render);
+        }
+        function ChangeBackgroundColor()
+        {
+            var backgroundColor = document.getElementById("backgroundColor").value;            
+            render.options.background = backgroundColor;
+        }
+        function SetBackgroundTransparent()
+        {
+            render.canvas.style.background = "transparent";
+        }
+
+        function ToggleWireframeDisplay()
+        {
+            render.options.wireframes = !render.options.wireframes;
+        }
+
+        function SetPixelRatio()
+        {
+            var pixelRatio = document.getElementById("pixelRatioInput").value;
+            Render.setPixelRatio(render, pixelRatio);//auto
+        }
+
+        function LookAtBoxA()
+        {
+            Render.lookAt(render,boxA,{x:0,y:0},center=true);
+        }
+        function LookAtBoxB()
+        {
+            Render.lookAt(render,boxB,{x:0,y:0},center=true);
+        }
+        function LookAtGround()
+        {
+            Render.lookAt(render,ground,{x:0,y:0},center=true);
+        }
+        function ResetViewPoint()
+        {
+            Render.lookAt(render,engine.world,{x:0,y:0},center=true);
+            //Render.endViewTransform(render);
+        }
+    </script>
+</body>
+</html>
