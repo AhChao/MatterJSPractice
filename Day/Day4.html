@@ -15,9 +15,8 @@
     <button onclick="SetBackgroundTransparent()">Set Background Transparent</button>
     <br>
     <button onclick="LookAtBoxA()">Look At Box A With Center</button>
-    <button onclick="LookAtBoxB()">Look At Box B With Center</button>
+    <button onclick="LookAtBoxB()">Look At Box B With Pad 100 XY</button>
     <button onclick="LookAtGround()">Look At Ground With Center</button>
-    <button onclick="ResetViewPoint()">Reset Viewpoint</button>
     <br>
     <input id="pixelRatioInput" type="text" value="0"/>
     <button onclick="SetPixelRatio()">Set Pixel Ratio</button>
@@ -119,16 +118,11 @@
         }
         function LookAtBoxB()
         {
-            Render.lookAt(render,boxB,{x:0,y:0},center=true);
+            Render.lookAt(render,boxB,{x:100,y:100},center=true);
         }
         function LookAtGround()
         {
             Render.lookAt(render,ground,{x:0,y:0},center=true);
-        }
-        function ResetViewPoint()
-        {
-            Render.lookAt(render,engine.world,{x:0,y:0},center=true);
-            //Render.endViewTransform(render);
         }
     </script>
 </body>
