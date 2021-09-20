@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day5</title>
+</head>
+<body>
+    <h1>Day5</h1>
+    <button onclick="RunTheRunner()">Run the runner</button>
+    <button onclick="StopTheRunner()">Stop the runner</button>
+    <button onclick="TriggerEngineUpdate()">Trigger engine update one frame</button>
+    <button onclick="TriggerRunnerWithTick()">Trigger runner with tick</button>
+    <br>
+    <script src="../Lib/matter.min.js"></script>
+    <script>
+        // module aliases
+        var Engine = Matter.Engine,
+            Render = Matter.Render,
+            Runner = Matter.Runner,
+            Bodies = Matter.Bodies,
+            Composite = Matter.Composite,
+            Events = Matter.Events;
+
+        // create an engine
+        var engine = Engine.create();
+
+        // create a renderer
+        var render = Render.create({
+            element: document.body,
+            engine: engine
+        });
+
+        // create two boxes and a ground
+        var boxA = Bodies.rectangle(400, 200, 80, 80);
+        var boxB = Bodies.rectangle(450, 50, 80, 80);
+        var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+        // add all of the bodies to the world
+        Composite.add(engine.world, [boxA, boxB, ground]);
+
+        // run the renderer
+        Render.run(render);
+
+        // create runner
+        var runner = Runner.create();
+        
+        // Events here
+        // Events.on(runner, "beforeTick", function(){ alert("Before tick triggered");})
+        // Events.on(runner, "tick", function(){ alert("Tick triggered now");})
+        // Events.on(runner, "beforeUpdate", function(){ alert("Before canvas update");})
+        // Events.on(runner, "afterUpdate", function(){ alert("After canvas update");})     
+        // Events.on(runner, "afterTick", function(){ alert("After tick triggered");})   
+
+        // run the engine
+        //Runner.run(runner, engine);
+
+        function RunTheRunner()
+        {
+            Runner.run(runner, engine);
+        }
+        function TriggerEngineUpdate()
+        {
+            var delta = 1000/60;
+            Engine.update(engine, delta);
+        }
+        function TriggerRunnerWithTick()
+        {
+            var delta = 1000/60;
+            Runner.tick(runner, engine, delta);
+        }
+        function StopTheRunner()
+        {
+            Runner.stop(runner, engine);
+        }
+    </script>
+</body>
+</html>
