@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day6</title>
+</head>
+<body>
+    <h1>Day6</h1>
+    <button onclick="RunTheRunner()">Run the runner</button>
+    <button onclick="StopTheRunner()">Stop the runner</button>
+    <br>
+    <script src="../Lib/matter.min.js"></script>
+    <script>
+        // module aliases
+        var Engine = Matter.Engine,
+            Render = Matter.Render,
+            Runner = Matter.Runner,
+            Bodies = Matter.Bodies,
+            Composite = Matter.Composite,
+            Events = Matter.Events;
+
+        // create an engine
+        var engine = Engine.create();
+
+        // create a renderer
+        var render = Render.create({
+            element: document.body,
+            engine: engine,
+            options:{
+                wireframes:false,
+                showIds:true,
+                background: '#bfe9f5', //"#bfe9f5"
+                width:600,
+                height:700
+            }
+        });
+
+        // create two boxes and a ground
+        //circle(x, y, radius, [options], [maxSides])
+        var circleA = Bodies.circle(100, 100, 80, null, 80);
+        var circleB = Bodies.circle(200, 100, 50, null, 10);
+        var circleC = Bodies.circle(300, 100, 50, null, 400);
+
+        //polygon(x, y, sides, radius, [options]) 
+        var polygonA = Bodies.polygon(100, 250, 5, 30);
+        var polygonB = Bodies.polygon(200, 250, 6, 50);
+        var polygonC = Bodies.polygon(300, 250, 6, 60);
+
+        //rectangle(x, y, width, height, [options])
+        var rectangleA = Bodies.rectangle(100,350,50,50);
+        var rectangleB = Bodies.rectangle(200,350,60,40);
+        var rectangleC = Bodies.rectangle(300,350,30,70);
+
+        //trapezoid(x, y, width, height, slope, [options])
+        var trapezoidA = Bodies.trapezoid(100,450,50,50,0.6);
+        var trapezoidB = Bodies.trapezoid(200,450,50,50,0.8);
+        var trapezoidC = Bodies.trapezoid(300,450,50,100,0.8);
+
+        var customizeA = Bodies.fromVertices(100,550, [{x:0,y:0},{x:70,y:70},{x:0,y:70}]);
+        var customizeB = Bodies.fromVertices(200,550, [{x:35,y:0},{x:70,y:0},{x:0,y:35},{x:105,y:35},{x:35,y:70},{x:70,y:70}]);
+
+        var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+        // add all of the bodies to the world
+        Composite.add(engine.world, [circleA, circleB, circleC, ground]);
+        Composite.add(engine.world, [polygonA, polygonB, polygonC]);
+        Composite.add(engine.world, [rectangleA, rectangleB, rectangleC]);
+        Composite.add(engine.world, [trapezoidA, trapezoidB, trapezoidC]);
+        Composite.add(engine.world, [customizeA, customizeB]);
+
+        // run the renderer
+        Render.run(render);
+
+        // create runner
+        var runner = Runner.create();
+
+        // run the engine
+        //Runner.run(runner, engine);
+
+        function RunTheRunner()
+        {
+            Runner.run(runner, engine);
+        }
+        function StopTheRunner()
+        {
+            Runner.stop(runner, engine);
+        }
+    </script>
+</body>
+</html>
