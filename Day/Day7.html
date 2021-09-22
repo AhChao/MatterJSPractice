@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day7</title>
+</head>
+<body>
+    <h1>Day7</h1>
+    <button onclick="RunTheRunner()">Run the runner</button>
+    <button onclick="StopTheRunner()">Stop the runner</button>
+    <br>
+    <button onclick="SetPosition()">Put the circle in the center</button>
+    <button onclick="Translate()">Make the circle appear in the air</button>
+    <button onclick="AddForceOnTargetObject()">Add the force on the circle</button>
+    <br>
+    <button onclick="RotateTheRect()">Rotate the rect</button>
+    <button onclick="RotateTheRectWithCenter()">Rotate the rect with the center</button>
+    <button onclick="SetAngle()">Set the rect angle</button>
+    <button onclick="SetAngularVelocity()">Set the rect angular velocity</button>   
+    <br>
+    <button onclick="SetMass()">Make the rect's mass bigger</button>
+    <button onclick="ScaleTheCircle()">Scale the circle in random</button>
+    <br>
+    <script src="../Lib/matter.min.js"></script>
+    <script>
+        // module aliases
+        var Engine = Matter.Engine,
+            Render = Matter.Render,
+            Runner = Matter.Runner,
+            Bodies = Matter.Bodies,
+            Composite = Matter.Composite,
+            Events = Matter.Events,
+            BodyM = Matter.Body,
+            Vertices = Matter.Vertices;
+
+        // create an engine
+        var engine = Engine.create();
+
+        // create a renderer
+        var render = Render.create({
+            element: document.body,
+            engine: engine,
+            options:{
+                wireframes:false,
+                showIds:true,
+                background: '#bfe9f5', //"#bfe9f5"
+                width:600,
+                height:700
+            }
+        });
+
+        // create two boxes and a ground
+        //circle(x, y, radius, [options], [maxSides])
+        var circleA = Bodies.circle(200, 200, 80, null, 80);
+        var rectA = Bodies.rectangle(400, 200, 80, 100);
+
+        var wallA = Bodies.rectangle(20, 0, 40, 1200, { isStatic: true });
+        var wallB = Bodies.rectangle(580, 0, 40, 1200, { isStatic: true });
+        var topA = Bodies.rectangle(300, 30, 600, 60, { isStatic: true });
+        var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+        // add all of the bodies to the world
+        Composite.add(engine.world, [circleA, rectA, wallA, wallB, topA, ground]);
+
+        // run the renderer
+        Render.run(render);
+
+        // create runner
+        var runner = Runner.create();
+
+        // run the engine
+        //Runner.run(runner, engine);
+
+        function RunTheRunner()
+        {
+            Runner.run(runner, engine);
+        }
+        function StopTheRunner()
+        {
+            Runner.stop(runner, engine);
+        }
+        function AddForceOnTargetObject()
+        {
+            //applyForce(body, position, force)
+            BodyM.applyForce(circleA,{x:100,y:800},{x:1,y:0});
+        }
+        function RotateTheRect()
+        {
+            //rotate(body, rotation, [point])
+            var degree = 90;
+            var radius = Math.PI / 180 * degree;
+            BodyM.rotate(rectA, radius);
+        }
+        function RotateTheRectWithCenter()
+        {
+            //rotate(body, rotation, [point])
+            var degree = 90;
+            var radius = Math.PI / 180 * degree;
+            BodyM.rotate(rectA, radius, {x:300,y:350});
+        }
+        function ScaleTheCircle()
+        {
+            //scale(body, scaleX, scaleY, [point])
+            var scaleX = Math.random()*2;
+            var scaleY = Math.random()*2;
+            BodyM.scale(circleA, scaleX < 0.3 ? 0.3 : scaleX, scaleY < 0.3 ? 0.3 : scaleY);
+        }
+        function SetAngle()
+        {
+            //setAngle(body, angle)
+            var degree = 120;
+            var radius = Math.PI / 180 * degree;
+            BodyM.setAngle(rectA, radius);
+        }
+        function SetAngularVelocity()
+        {
+            //setAngularVelocity(body, velocity)
+            BodyM.setAngularVelocity(rectA, 1);
+        }
+        function SetMass()
+        {
+            //setMass(body, mass)
+            //setDensity(body, density)
+            BodyM.setMass(rectA,1000);
+        }
+        function SetPosition()
+        {
+            //setPosition(body, position)
+            BodyM.setPosition(circleA,{x:300,y:350});
+        }
+        function Translate()
+        {
+            //translate(body, translation)
+            BodyM.translate(circleA,{x:0,y:-300});
+        }
+    </script>
+</body>
+</html>
