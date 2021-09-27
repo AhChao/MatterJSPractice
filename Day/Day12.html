@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day12</title>
+</head>
+<body>
+    <h1>Day12</h1>
+    <button onclick="runTheRunner()">Run the runner</button>
+    <button onclick="stopTheRunner()">Stop the runner</button>
+    <button onclick="reInit()">Re Init</button>
+    <br>
+    <script src="../Lib/matter.min.js"></script>
+    <script>
+        // Global Settings / Variables
+        var Engine = Matter.Engine,
+            Render = Matter.Render,
+            Runner = Matter.Runner,
+            Bodies = Matter.Bodies,
+            Composite = Matter.Composite,
+            Events = Matter.Events,
+            BodyM = Matter.Body,
+            Vertices = Matter.Vertices;
+        
+        var engine;
+        var render;
+        var runner;
+        var ballStatus = 0;
+        var mainBall;
+        const canvasWidth = 400;
+        const canvasHeigh = 630;
+        const blockSize = 20;
+        const mainBallRadius = 15;
+        const minimumBlockGenerateX = 50;
+        const minimumBlockGenerateY = 100;
+        const blockSeparateX = canvasWidth - minimumBlockGenerateX - 50;
+        const blockSeparateY = canvasHeigh - minimumBlockGenerateY  - 100;
+        const minimumDistanceBetweenBlocks = 60;
+
+        function init()
+        {
+            engine = Engine.create();
+            render = Render.create({
+                element: document.body,
+                engine: engine,
+                options:{
+                    wireframes:false,
+                    showIds:true,
+                    background: '#bfe9f5', //"#bfe9f5"
+                    width:canvasWidth,
+                    height:canvasHeigh
+                }
+            });
+            formHiddenWall();
+            formMainBall();
+            formRandomBlocks(15);
+            formEndingTrigger();
+
+            Render.run(render);
+            runner = Runner.create();
+            Events.on(engine, "collisionStart", collisionTriggered);
+        }
+        init();
+
+        function reInit()
+        {
+            event.preventDefault();
+            Engine.clear(engine);
+            Render.stop(render);
+            Runner.stop(runner);
+            render.canvas.remove();
+            render.canvas = null;
+            render.context = null;
+            render.textures = {};
+            init();
+        }
+
+        function formMainBall()
+        {
+            const mainBallInitX = canvasWidth/2;
+            const mainBallInitY = 50;
+            
+            mainBall = Bodies.circle(mainBallInitX, mainBallInitY, mainBallRadius, options = {
+                restitution: 1,
+                render:{
+                    fillStyle:"#FFFFFF"
+                }
+            }, 100);
+            mainBall.label = "MainBall";
+            Composite.add(engine.world, [mainBall]);
+        }
+        function formHiddenWall()
+        {
+            var wallLeft = Bodies.rectangle(-21, canvasHeigh/2, 40, canvasHeigh, { isStatic: true });
+            var wallRight = Bodies.rectangle(canvasWidth+21, canvasHeigh/2, 40, canvasHeigh, { isStatic: true });
+            Composite.add(engine.world, [wallLeft,wallRight]);
+        }
+
+        function formRandomBlocks(blockCount)
+        {
+            var rainbowBlockCount = Math.floor(blockCount/10) + Math.floor(Math.random()*3) - Math.floor(Math.random()*2);
+            var goldBlockCount = Math.floor(blockCount/6) + Math.floor(Math.random()*3) - Math.floor(Math.random()*2);
+            var normalBlockCount = blockCount - rainbowBlockCount - goldBlockCount;
+
+            if(rainbowBlockCount < 0) rainbowBlockCount = 0;
+            if(goldBlockCount < 5) goldBlockCount = 5;
+            
+            var normalBlockOptions ={
+                render : {
+                    fillStyle : "#569cd8",
+                },
+                isStatic : true,
+                angle : getRadiusByDegree(45)
+            };
+            var goldBlockOptions ={
+                render : {
+                    fillStyle : "#FFD700",
+                },
+                isStatic : true,
+                angle : getRadiusByDegree(45)
+            };
+            var rainbowBlockOptions ={
+                render : {
+                    fillStyle : "red",
+                },
+                isStatic : true,
+                angle : getRadiusByDegree(45)
+            };
+            
+            var blockCoordinateList = [];
+            formBlockWithOptionAndCount(normalBlockCount,normalBlockOptions,blockCoordinateList,"NormalBlock");
+            formBlockWithOptionAndCount(goldBlockCount,goldBlockOptions,blockCoordinateList,"GoldBlock");
+            formBlockWithOptionAndCount(rainbowBlockCount,rainbowBlockOptions,blockCoordinateList,"RainbowBlock");
+            
+        }
+        function formBlockWithOptionAndCount(blockCount,blockOptions,blockCoordinateList,labelName)
+        {
+            for(var i=0; i<blockCount; i++)
+            {
+                var blockCoordinate = getRandomCoordinateForBlocks(blockCoordinateList);
+                var block = Bodies.rectangle(blockCoordinate.x, blockCoordinate.y, blockSize, blockSize, blockOptions);
+                blockCoordinateList.push(blockCoordinate);
+                block.label = labelName;
+                Composite.add(engine.world, [block]);
+            }
+        }
+
+        function formEndingTrigger()
+        {
+            var wallBottom = Bodies.rectangle(canvasWidth/2, canvasHeigh+400, canvasWidth, 100, { isSensor:true, isStatic:true, label:"EndingBlock" });
+            Composite.add(engine.world, [wallBottom]);
+        }
+
+        function getRandomCoordinateForBlocks(blockCoordinateList)
+        {
+            var x = minimumBlockGenerateX + blockSeparateX * Math.random();
+            var y = minimumBlockGenerateY + blockSeparateY * Math.random();
+            var fitAll = false;
+            var loopCount = 0;
+            while(!fitAll && loopCount < 1000)
+            {
+                fitAll = true;
+                for(var i in blockCoordinateList)
+                {
+                    if(getDistanceWithPoints(blockCoordinateList[i],{x,y}) < minimumDistanceBetweenBlocks)
+                    {
+                        x = minimumBlockGenerateX + blockSeparateX * Math.random();
+                        y = minimumBlockGenerateY + blockSeparateY * Math.random();
+                        fitAll = false;
+                    }
+                }
+                loopCount++;
+            }
+            return {x,y};
+        }
+        function getDistanceWithPoints(pointA,pointB)
+        {
+            return Math.sqrt(Math.pow(Math.floor(pointA.x) - Math.floor(pointB.x),2) + Math.pow(Math.floor(pointA.y) - Math.floor(pointB.y),2));
+        }
+
+        function runTheRunner()
+        {
+            Runner.run(runner, engine);
+        }
+        function stopTheRunner()
+        {
+            Runner.stop(runner, engine);
+        }
+        function getRadiusByDegree(degree)
+        {
+            return Math.PI / 180 * degree;
+        }
+        function collisionTriggered(e)
+        {
+            if(e.name == 'collisionStart' && e.pairs.length > 0)
+            {
+                if(e.pairs[0].bodyB.label =="EndingBlock") triggerEnding();
+                if(e.pairs[0].bodyB.label !="GoldBlock" && e.pairs[0].bodyB.label !="RainbowBlock") return;
+                if(e.pairs[0].bodyB.label =="GoldBlock") ballStatus += 1;
+                if(e.pairs[0].bodyB.label =="RainbowBlock") ballStatus += 2;
+                Composite.remove(engine.world, e.pairs[0].bodyB);
+            }
+            console.log(ballStatus);
+            if(ballStatus == 1)
+            {
+                mainBall.render.fillStyle = "#FFD700";
+            }
+            if(ballStatus >= 2)
+            {
+                mainBall.render.fillStyle = "red";
+            }
+        }
+
+        function triggerEnding()
+        {
+            var resultString;
+            switch (ballStatus)
+            {
+                case 0 : resultString = "White"; break;
+                case 1 : resultString = "Gold"; break;
+                case 2 : resultString = "Rainbow"; break;
+                default : resultString = "Rainbow"; break;
+            }
+            alert("Your result is [" + resultString + " Ball] !" );
+        }
+    </script>
+</body>
+</html>
