@@ -83,23 +83,12 @@
         {
             Runner.run(runner, engine);
         }
+        
         function StopTheRunner()
         {
             Runner.stop(runner, engine);
         }
-        function CollisionTriggered(e)
-        {
-            console.log("CollisionActive:" , e);
-            StopTheRunner();
-            if(e.name == 'collisionStart' && e.pairs.length > 0 && e.pairs[0].bodyA.id == 1 && e.pairs[0].bodyB.id == 2)
-            {
-                e.pairs[0].bodyB.render.fillStyle = "green"
-            }
-            if(e.name == 'collisionStart' && e.pairs.length > 0 && e.pairs[0].bodyA.id == 2 && e.pairs[0].bodyB.id == 3)
-            {
-                e.pairs[0].bodyA.render.fillStyle = "#7DB4A2"
-            }
-        }
+
         function alertTheBounds()
         {
             var minX = render.bounds.min.x;
