@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day13</title>
+</head>
+<body>
+    <h1>Day13</h1>
+    <button onclick="RunTheRunner()">Run the runner</button>
+    <button onclick="StopTheRunner()">Stop the runner</button>
+    <button onclick="alertTheBounds()">Alert the render bounds position</button>
+    <br>
+    <h2>Move the Bounds</h2>
+    <span>Move speed : </span><input type="number" value="10" onchange="modifyMoveSpeed(this.value)"><br>
+    <button style="visibility:hidden;">> </button>
+    <button onclick="moveTheBounds({x:0,y:moveAmount})">^</button><br>
+    <button onclick="moveTheBounds({x:-moveAmount,y:0})"><</button>
+    <button onclick="moveTheBounds({x:0,y:-moveAmount})">v</button>
+    <button onclick="moveTheBounds({x:moveAmount,y:0})">></button>
+    <br>
+    <button onclick="resetRenderBounds()">Reset render bounds</button>
+    <button onclick="moveTheBoundsToCenterOfCanvas()">Focus on center of canvas</button>
+    <button onclick="updateTheBounds()">Update the bounds</button>
+    <br>
+    <script src="../Lib/matter.min.js"></script>
+    <script>
+        // module aliases
+        var Engine = Matter.Engine,
+            Render = Matter.Render,
+            Runner = Matter.Runner,
+            Bodies = Matter.Bodies,
+            Composite = Matter.Composite,
+            Events = Matter.Events,
+            Bounds = Matter.Bounds;
+        var moveAmount = 10;
+
+        // create an engine
+        var engine = Engine.create();
+
+        // create a renderer
+        var render = Render.create({
+            element: document.body,
+            engine: engine,
+            options: {
+                width: 800,
+                height: 600,
+                background: '#000000',
+                hasBounds: true,
+                showBounds:true,
+                enabled: true,
+                wireframes: false,
+                showSleeping: true,
+                showStats: true,
+                showVelocity: true,
+                showCollisions: true,
+                showSeparations: true,
+                showPositions: true,
+                showAngleIndicator: true,
+                showIds: true,
+            }
+        });
+
+        // create two boxes and a ground
+        var boxA = Bodies.rectangle(400, 200, 80, 80);
+        var boxB = Bodies.rectangle(450, 50, 80, 80);
+        var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+        // add all of the bodies to the world
+        Composite.add(engine.world, [boxA, boxB, ground]);
+
+        // run the renderer
+        Render.run(render);
+
+        // create runner
+        var runner = Runner.create();
+
+        // run the engine
+        //Runner.run(runner, engine);
+        
+        function RunTheRunner()
+        {
+            Runner.run(runner, engine);
+        }
+        function StopTheRunner()
+        {
+            Runner.stop(runner, engine);
+        }
+        function CollisionTriggered(e)
+        {
+            console.log("CollisionActive:" , e);
+            StopTheRunner();
+            if(e.name == 'collisionStart' && e.pairs.length > 0 && e.pairs[0].bodyA.id == 1 && e.pairs[0].bodyB.id == 2)
+            {
+                e.pairs[0].bodyB.render.fillStyle = "green"
+            }
+            if(e.name == 'collisionStart' && e.pairs.length > 0 && e.pairs[0].bodyA.id == 2 && e.pairs[0].bodyB.id == 3)
+            {
+                e.pairs[0].bodyA.render.fillStyle = "#7DB4A2"
+            }
+        }
+        function alertTheBounds()
+        {
+            var minX = render.bounds.min.x;
+            var minY = render.bounds.min.y;
+            var maxX = render.bounds.max.x;
+            var maxY = render.bounds.max.y;
+            console.log(render.bounds);
+            alert("The bounds position of render is ("+minX+","+minY+") to ("+maxX+","+maxY+")");
+        }
+
+        function moveTheBounds(moveVector)
+        {
+            Bounds.translate(render.bounds, moveVector);
+        }
+
+        function modifyMoveSpeed(inputMoveAmount)
+        {
+            moveAmount = parseInt(inputMoveAmount);
+        }
+
+        function resetRenderBounds()
+        {
+            //Bounds.translate(render.bounds, {x:render.canvas.width/2,y:render.canvas.height/2});
+            //Bounds.shift(render.bounds, {x:render.canvas.width/2,y:render.canvas.height/2});
+            Bounds.shift(render.bounds, {x:0,y:0});
+        }
+
+        function updateTheBounds()
+        {
+            //Bounds.translate(render.bounds, {x:render.canvas.width/2,y:render.canvas.height/2});
+            //Bounds.shift(render.bounds, {x:render.canvas.width/2,y:render.canvas.height/2});
+            Bounds.update(render.bounds, [{x:0,y:0},{x:400,y:300},{x:800,y:600}],{x:100,y:100} )
+            console.log(boxA.bounds);
+        }
+    </script>
+</body>
+</html>
