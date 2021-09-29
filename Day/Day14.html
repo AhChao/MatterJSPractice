@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day14</title>
+</head>
+<body>
+    <h1>Day14</h1>
+    <button onclick="runTheRunner()">Run the runner</button>
+    <button onclick="stopTheRunner()">Stop the runner</button>
+    <br>
+    <span>Time Parameter : Elapsed :<span id="lastElapsedDisplay"></span> | LastDelta :<span id="lastDeltaDisplay"></span> | Timestamp :<span id="lastTimeStampDisplay"></span></span><br>
+    <span>BoxA Velocity : <span id="boxAVelocityDisplay"></span>, Speed : <span id="boxASpeedDisplay"></span></span>
+    <br>
+    <span>BoxB Velocity : <span id="boxBVelocityDisplay"></span>, Speed : <span id="boxBSpeedDisplay"></span></span>
+    <br>
+    <button onclick="resetTheRect()">Reset the rect</button>
+    <span>Time Scale : </span><input type="number" value="1" onchange="setTimeScale(this.value)"><br>
+    <br>
+    <script src="../Lib/matter.min.js"></script>
+    <script>
+        // module aliases
+        var Engine = Matter.Engine,
+            Render = Matter.Render,
+            Runner = Matter.Runner,
+            Bodies = Matter.Bodies,
+            Composite = Matter.Composite,
+            Events = Matter.Events,
+            BodyM = Matter.Body;
+        var moveAmount = 10;
+        var frameCount = 0;
+
+        // create an engine
+        var engine = Engine.create();
+
+        // create a renderer
+        var render = Render.create({
+            element: document.body,
+            engine: engine,
+            options: {
+                width: 800,
+                height: 600,
+                background: '#000000',
+                hasBounds: true,
+                showBounds:true,
+                enabled: true,
+                wireframes: false,
+                showSleeping: true,
+                showStats: true,
+                showVelocity: true,
+                showCollisions: true,
+                showSeparations: true,
+                showPositions: true,
+                showAngleIndicator: true,
+                showIds: true,
+            }
+        });
+
+        Events.on(engine, "afterUpdate", frameUpdated);
+
+        // create two boxes and a ground
+        var boxA = Bodies.rectangle(400, 200, 80, 80);
+        var boxB = Bodies.rectangle(450, 50, 80, 80);
+        var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+        // add all of the bodies to the world
+        Composite.add(engine.world, [boxA, boxB, ground]);
+
+        // run the renderer
+        Render.run(render);
+
+        // create runner
+        var runner = Runner.create();
+
+        // run the engine
+        //Runner.run(runner, engine);
+        
+        function runTheRunner()
+        {
+            Runner.run(runner, engine);
+        }
+        function stopTheRunner()
+        {
+            Runner.stop(runner, engine);
+        }
+        function resetTheRect()
+        {
+            BodyM.setPosition(boxA,{x:400,y:200});
+            BodyM.setPosition(boxB,{x:450,y:50});
+            BodyM.setVelocity(boxA,{x:0,y:0});
+            BodyM.setVelocity(boxB,{x:0,y:0});
+            BodyM.setAngularVelocity(boxA, 0);
+            BodyM.setAngularVelocity(boxB, 0);
+        }
+        function setTimeScale(value)
+        {
+            engine.timing.timeScale = value;
+        }
+        function frameUpdated()
+        {
+            if(frameCount > 10)
+            {
+                document.getElementById("boxAVelocityDisplay").innerHTML = "{x:" + floorTo2DecimalPlace(boxA.velocity.x) + ",y:" + floorTo2DecimalPlace(boxA.velocity.y) + "}";
+                document.getElementById("boxBVelocityDisplay").innerHTML = "{x:" + floorTo2DecimalPlace(boxB.velocity.x) + ",y:" + floorTo2DecimalPlace(boxB.velocity.y) + "}";
+                document.getElementById("boxASpeedDisplay").innerHTML = floorTo2DecimalPlace(boxA.speed);
+                document.getElementById("boxBSpeedDisplay").innerHTML = floorTo2DecimalPlace(boxB.speed);
+
+                document.getElementById("lastElapsedDisplay").innerHTML = floorTo2DecimalPlace(engine.timing.lastElapsed);
+                document.getElementById("lastDeltaDisplay").innerHTML = floorTo2DecimalPlace(engine.timing.lastDelta);
+                document.getElementById("lastTimeStampDisplay").innerHTML = engine.timing.timestamp;
+
+                frameCount = 0
+            }
+            else
+            {
+                frameCount++;
+            }
+        }
+        function floorTo2DecimalPlace(value)
+        {
+            return Math.floor(value*100)/100;
+        }
+    </script>
+</body>
+</html>
