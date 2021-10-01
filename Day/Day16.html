@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day16</title>
+</head>
+<body>
+    <h1>Day16</h1>
+    <button onclick="runTheRunner()">Run the runner</button>
+    <button onclick="stopTheRunner()">Stop the runner</button>
+    <br>
+    <button onclick="logTheMouseObject()">Log the mouse object</button>
+    <button onclick="clearSourceEvents()">Clear the source events</button>
+    <br>
+    <script src="../Lib/matter.min.js"></script>
+    <script>
+        // module aliases
+        var Engine = Matter.Engine,
+            Render = Matter.Render,
+            Runner = Matter.Runner,
+            Bodies = Matter.Bodies,
+            Composite = Matter.Composite,
+            Events = Matter.Events,
+            Mouse = Matter.Mouse;
+
+        // create an engine
+        var engine = Engine.create();
+
+        // create a renderer
+        var render = Render.create({
+            element: document.body,
+            engine: engine,
+            options: {
+                width: 800,
+                height: 600,
+                background: '#000000',
+                hasBounds: true,
+                showBounds:true,
+                enabled: true,
+                wireframes: false,
+                showSleeping: true,
+                showStats: true,
+                showVelocity: true,
+                showCollisions: true,
+                showSeparations: true,
+                showPositions: true,
+                showAngleIndicator: true,
+                showIds: true,
+            }
+        });
+
+        var mouseObject = Mouse.create(render.canvas);
+        //Mouse.setElement(mouse, element)
+
+        // create two boxes and a ground
+        var boxA = Bodies.rectangle(400, 200, 80, 80);
+        var boxB = Bodies.rectangle(450, 50, 80, 80);
+        var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+        // add all of the bodies to the world
+        Composite.add(engine.world, [boxA, boxB, ground]);
+
+        // run the renderer
+        Render.run(render);
+
+        // create runner
+        var runner = Runner.create();
+        Events.on(engine, "afterUpdate", frameUpdated);
+
+        // run the engine
+        //Runner.run(runner, engine);
+
+        var canvas = document.getElementsByTagName("canvas")[0];
+        canvas.addEventListener('click', function() { console.log(mouseObject); }, false);
+        
+        function runTheRunner()
+        {
+            Runner.run(runner, engine);
+        }
+        function stopTheRunner()
+        {
+            Runner.stop(runner, engine);
+        }
+
+        function logTheMouseObject()
+        {
+            console.log(mouseObject);
+        }
+
+        function clearSourceEvents()
+        {
+            Mouse.clearSourceEvents(mouse);
+            logTheMouseObject();
+        }
+
+        function frameUpdated()
+        {
+            if(mouseObject.button == 0)
+                console.log(mouseObject);
+        }
+
+        //Mouse.setOffset(mouse, offset)
+        //Mouse.setScale(mouse, scale)
+    </script>
+</body>
+</html>
