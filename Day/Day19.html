@@ -10,6 +10,7 @@
     <h1>Day19</h1>
     <button onclick="runTheRunner()">Run the runner</button>
     <button onclick="stopTheRunner()">Stop the runner</button>
+    <button onclick="consoleLogBodyInfo()">Alert body info</button>
     <br>
     <script src="../Lib/matter.min.js"></script>
     <script>
@@ -115,6 +116,11 @@
         function stopTheRunner()
         {
             Runner.stop(runner, engine);
+        }
+        function consoleLogBodyInfo()
+        {
+            console.log("constraintA pointA with property ", constraintA.pointA);
+            console.log("constraintA.pointA with method", Constraint.pointAWorld(constraintA));
         }
     </script>
 </body>
