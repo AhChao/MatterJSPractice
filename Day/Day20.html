@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day20</title>
+</head>
+<body>
+    <h1>Day20</h1>
+    <button onclick="runTheRunner()">Run the runner</button>
+    <button onclick="stopTheRunner()">Stop the runner</button>
+    <br>
+    <button onclick="reverseBoxASleepStatus()">Reverse BoxA sleep status</button>
+    <button onclick="removeEnableSleepingFromEngine()">Remove enableSleeping from engine</button>
+    <br>
+    <script src="../Lib/matter.min.js"></script>
+    <script>
+        // module aliases
+        var Engine = Matter.Engine,
+            Render = Matter.Render,
+            Runner = Matter.Runner,
+            Bodies = Matter.Bodies,
+            Composite = Matter.Composite,
+            Events = Matter.Events,
+            Mouse = Matter.Mouse,
+            BodyM = Matter.Body,
+            Constraint = Matter.Constraint,
+            MouseConstraint = Matter.MouseConstraint,
+            Sleeping = Matter.Sleeping;
+
+        // create an engine
+        var engine = Engine.create(options={
+            enableSleeping : true // can try to edit this property
+        });
+
+        // create a renderer
+        var render = Render.create({
+            element: document.body,
+            engine: engine,
+            options: {
+                width: 800,
+                height: 600,
+                background: '#000000',
+                hasBounds: true,
+                showBounds:true,
+                enabled: true,
+                wireframes: false,
+                showSleeping: true,
+                showStats: true,
+                showVelocity: true,
+                showCollisions: true,
+                showSeparations: true,
+                showPositions: true,
+                showAngleIndicator: true,
+                showIds: true
+            }
+        });
+
+        // create two boxes and a ground
+        var boxA = Bodies.circle(400, 300, 80, options={
+            sleepThresholdNumber : 10000,
+            isSleeping : true
+        });
+        var boxB = Bodies.rectangle(450, 50, 80, 80);
+        var boxC = Bodies.circle(650, 300, 80, options={
+            sleepThresholdNumber : 10000,
+            isSleeping : true
+        });
+        var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+        var mouseConstraintA = MouseConstraint.create(engine);
+
+        // add all of the bodies to the world
+        Composite.add(engine.world, [boxA, boxB, boxC, ground,mouseConstraintA]);
+
+        // run the renderer
+        Render.run(render);
+
+        // create runner
+        var runner = Runner.create();
+
+        // run the engine
+        //Runner.run(runner, engine);
+        
+        function runTheRunner()
+        {
+            Runner.run(runner, engine);
+        }
+        function stopTheRunner()
+        {
+            Runner.stop(runner, engine);
+        }
+
+        function reverseBoxASleepStatus()
+        {
+            Sleeping.set(boxA, !boxA.isSleeping);
+        }
+
+        function removeEnableSleepingFromEngine()
+        {
+            engine.enableSleeping = false;
+        }
+    </script>
+</body>
+</html>
