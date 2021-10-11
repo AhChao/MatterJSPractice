@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day25</title>
+</head>
+<body>
+    <h1>Day25</h1>
+    <button onclick="runTheRunner()">Run the runner</button>
+    <button onclick="stopTheRunner()">Stop the runner</button>
+    <br>
+    <script src="../Lib/matter.min.js"></script>
+    <script>
+        // module aliases
+        var Engine = Matter.Engine,
+            Render = Matter.Render,
+            Runner = Matter.Runner,
+            Bodies = Matter.Bodies,
+            Composite = Matter.Composite,
+            Events = Matter.Events,
+            Mouse = Matter.Mouse,
+            BodyM = Matter.Body,
+            Constraint = Matter.Constraint,
+            MouseConstraint = Matter.MouseConstraint,
+            Composites = Matter.Composites;
+
+        // create an engine
+        var engine = Engine.create(options={
+            enableSleeping : true // can try to edit this property
+        });
+
+        // create a renderer
+        var render = Render.create({
+            element: document.body,
+            engine: engine,
+            options: {
+                width: 800,
+                height: 600,
+                background: '#000000',
+                hasBounds: true,
+                showBounds: true,
+                enabled: true,
+                wireframes: false,
+                showSleeping: true,
+                showStats: true,
+                showVelocity: true,
+                showCollisions: true,
+                showSeparations: true,
+                showPositions: true,
+                showAngleIndicator: true,
+                showIds: true
+            }
+        });
+
+        var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+        Composite.add(engine.world, [ground]);
+        
+        var rectangleA = Bodies.rectangle(100,350,50,50);
+        var rectangleA2 = Bodies.rectangle(200,450,60,40);
+        var compositeA = Composite.create(options ={
+            bodies : [rectangleA, rectangleA2]
+        });
+        var rectangleB = Bodies.rectangle(300,350,50,50);
+        var rectangleB2 = Bodies.rectangle(350,450,60,40);
+        var compositeB = Composite.create(options ={
+            bodies : [rectangleB, rectangleB2]
+        });
+        compositeA = Composite.add(compositeA, compositeB);
+        compositeA = Composites.chain(compositeA, 0, 0, 0, 0);
+        Composite.add(engine.world, [compositeA]);
+
+        console.log("Bodies : " , Composite.allBodies(compositeA));
+        console.log("Constraints : " , Composite.allConstraints(compositeA));
+        console.log("Composites : " , Composite.allComposites(compositeA));
+        console.log("Bounds : " , Composite.bounds(compositeA));
+
+        //Composite.clear(compositeA, false, deep=false);
+
+        // run the renderer
+        Render.run(render);
+
+        // create runner
+        var runner = Runner.create();
+
+        // run the engine
+        //Runner.run(runner, engine);
+        
+        function runTheRunner()
+        {
+            Runner.run(runner, engine);
+        }
+        function stopTheRunner()
+        {
+            Runner.stop(runner, engine);
+        }
+    </script>
+</body>
+</html>
