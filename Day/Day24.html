@@ -82,7 +82,7 @@
         var constraintOptions = Common.extend({ stiffness: 0.06, render: { type: 'line', anchors: false } }, constraintOptions);
         
         //Matter.Composites.mesh(composite, columns, rows, crossBrace, options)
-        compositeB = Composites.mesh(compositeB, 5, 5, 0, constraintOptions);
+        compositeB = Composites.mesh(compositeB, 5, 5, false, constraintOptions);
         Composite.add(engine.world, [compositeB]);
 
         //Matter.Composites.pyramid(xx, yy, columns, rows, columnGap, rowGap, callback)
