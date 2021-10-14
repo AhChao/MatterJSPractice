@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day29</title>
+    <style>
+        body{
+            background-color: #FEFAE0;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            height: 100%;
+        }
+        .titleInPage{
+            text-align: center;
+            color: #231F20;
+        }
+        .displayField{
+            width: 20%;
+            background-color: #8E8358;
+            border: 2px #231F20 solid;
+            border-radius: 5px;
+            color: #FFFFFF;
+            text-align: center;
+            font-size: 16px;
+        }
+        .buttonStyle{
+            border: 2px #231F20 solid;
+            border-radius: 5px;
+            background-color: #A57F60;
+            color: #FFFFFF;
+            font-size: 16px;
+        }
+        .scoreField{
+            font-size: 14px;
+        }
+        .centerField{
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .description{
+            font-size: 12px;
+            margin-left: 20px;
+            margin-right: 20px;
+            text-align: center;
+            line-height: 20px;
+        }
+        .footer{
+            position: fixed;
+            bottom: 0px;
+            width: 100%;
+            text-align: center;
+        }
+        .footerText{
+            font-size: 12px;
+        }
+        .bottomLink{
+            text-decoration: underline;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1 class="titleInPage">2048<span style="font-size:10px; margin-left:10px">Day29</span></h1>
+        <div class="centerField">
+            <span class="displayField">Score<br><span id="scoreDisplay" class="scoreField">0</span></span>
+            <span class="displayField">Best<br><span id="bestScoreDisplay" class="scoreField">0</span></span>
+            <button class="buttonStyle" onclick="retry()">Retry</button>
+        </div>
+        <div id="canvasPlace"></div>
+        <div>
+            <h2 class="titleInPage">How to play?</h2>
+            <div class="description">
+                Try to swipe the screen or press arrow key to change GRAVITY!<br>
+                Use GRAVITY to make same ball collisided and merge!<br>
+                Make the BIGEST ball!
+            </div>
+        </div>
+        <div class="footer">
+            <span class="footerText">Made by <a class="bottomLink" href="https://github.com/AhChao" target="_blank">AhChao</a>@2021 - IThome</span>
+        </div>
+    </div>
+    
+    <script src="../../Lib/matter.min.js"></script>
+    <script src="./lib/swiped-events.min.js"></script>
+    <script src="./src/calculateHelper.js"></script>
+    <script src="./src/formObjects.js"></script>
+    <script src="./src/swipedEvent.js"></script>
+    <script src="./src/collisionHandle.js"></script>
+    <script src="./src/renderText.js"></script>
+    <script src="./src/main.js"></script>
+</body>
+</html>
